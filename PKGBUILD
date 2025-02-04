@@ -114,7 +114,7 @@ b2sums=('fb2977af32fd2f33bfc661cb6c4b28a7f5d390c498122b26920cf18d1c3c0f29f19c618
         '0c1e145109de9a25339633b563e47f6c09ea314f636023d09a58559a499dd0bd283a45e050fc99fe34c4d712bd00a035064fa8406734d57029c67b9adb4b11ce')
 _arch_list=(ARM AARCH64 IA32 X64)
 _build_type=RELEASE
-_build_plugin=GCC5
+_build_plugin=GCC
 
 prepare() {
   local submodule
@@ -197,14 +197,12 @@ build() {
   )
 
   cd $pkgbase
-  export GCC5_IA32_PREFIX="x86_64-linux-gnu-"
-  export GCC5_X64_PREFIX="x86_64-linux-gnu-"
-  export GCC5_AARCH64_PREFIX="aarch64-linux-gnu-"
-  export GCC5_ARM_PREFIX="arm-none-eabi-"
-  echo "Building base tools (AARCH64)"
-  ARCH=AARCH64 make -C BaseTools
-  echo "Building base tools (ARM)"
-  ARCH=ARM make -C BaseTools
+  # This is used as the prefix for both gcc and objcopy
+  # so it cannot be set to x86_64-linux-gnu-
+  # (binutils does not provide x86_64-linux-gnu-objcopy)
+  export GCC_BIN=""
+  export GCC_AARCH64_PREFIX="aarch64-linux-gnu-"
+  export GCC_ARM_PREFIX="arm-none-eabi-"
   echo "Building base tools"
   make -C BaseTools
   # expose build tooling in PATH
