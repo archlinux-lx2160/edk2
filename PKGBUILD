@@ -389,7 +389,6 @@ package_edk2-ovmf() {
 
   pkgdesc="Firmware for Virtual Machines (x86_64, i686)"
   url="https://github.com/tianocore/tianocore.github.io/wiki/OVMF"
-  license+=(MIT)
   provides=(ovmf)
   conflicts=(ovmf)
   replaces=(ovmf)
