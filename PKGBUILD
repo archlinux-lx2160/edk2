@@ -268,9 +268,10 @@ build() {
         -D SECURE_BOOT_ENABLE
       )
       BaseTools/BinWrappers/PosixLike/build "${_build_options[@]}"
-      dd if=/dev/zero of=Build/ArmVirtQemu-$_arch/${_build_type}_${_build_plugin}/FV/QEMU_EFI.fd bs=1M count=64
-      dd if=Build/ArmVirtQemu-$_arch/${_build_type}_${_build_plugin}/FV/QEMU_EFI.fd of=Build/ArmVirtQemu-$_arch/${_build_type}_${_build_plugin}/FV/QEMU_EFI.fd conv=notrunc
-      dd if=/dev/zero of=Build/ArmVirtQemu-$_arch/${_build_type}_${_build_plugin}/FV/QEMU_VARS.fd bs=1M count=64
+      local _file
+      for _file in QEMU_EFI.fd QEMU_VARS.fd; do
+        dd if=/dev/null of=Build/ArmVirtQemu-$_arch/${_build_type}_${_build_plugin}/FV/${_file} bs=1M seek=64
+      done
       ;;
       RiscV64)
       echo "Building ovmf ($_arch) with secure boot"
@@ -285,13 +286,10 @@ build() {
       )
 
       BaseTools/BinWrappers/PosixLike/build "${_build_options[@]}"
-
-      dd if=/dev/zero of=Build/RiscVVirtQemu/${_build_type}_$_build_plugin/FV/RISCV_VIRT_CODE.fd.tmp bs=1M count=32
-      dd if=Build/RiscVVirtQemu/${_build_type}_$_build_plugin/FV/RISCV_VIRT_CODE.fd of=Build/RiscVVirtQemu/${_build_type}_$_build_plugin/FV/RISCV_VIRT_CODE.fd.tmp conv=notrunc
-      mv -v Build/RiscVVirtQemu/${_build_type}_$_build_plugin/FV/RISCV_VIRT_CODE.fd{.tmp,}
-      dd if=/dev/zero of=Build/RiscVVirtQemu/${_build_type}_$_build_plugin/FV/RISCV_VIRT_VARS.fd.tmp bs=1M count=32
-      dd if=Build/RiscVVirtQemu/${_build_type}_$_build_plugin/FV/RISCV_VIRT_VARS.fd of=Build/RiscVVirtQemu/${_build_type}_$_build_plugin/FV/RISCV_VIRT_VARS.fd.tmp conv=notrunc
-      mv -v Build/RiscVVirtQemu/${_build_type}_$_build_plugin/FV/RISCV_VIRT_VARS.fd{.tmp,}
+      local _file
+      for _file in RISCV_VIRT_CODE.fd RISCV_VIRT_VARS.fd; do
+        dd if=/dev/null of=Build/RiscVVirtQemu/${_build_type}_$_build_plugin/FV/${_file} bs=1M seek=32
+      done
       ;;
     esac
   done
