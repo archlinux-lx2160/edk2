@@ -4,7 +4,7 @@
 pkgbase=edk2
 pkgname=(edk2-aarch64 edk2-riscv64 edk2-shell edk2-ovmf)
 pkgver=202602
-pkgrel=2
+pkgrel=3
 pkgdesc="Modern, feature-rich firmware development environment for the UEFI specifications"
 arch=(any)
 url="https://github.com/tianocore/edk2"
