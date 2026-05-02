@@ -2,7 +2,14 @@
 # Contributor: Alexander Epaneshnikov <alex19ep@archlinux.org>
 
 pkgbase=edk2
-pkgname=(edk2-aarch64 edk2-riscv64 edk2-shell edk2-ovmf)
+if [[ "$CARCH" == "aarch64" ]]; then
+  # On aarch64 hosts (e.g. Arch Linux ARM) the native gcc targets aarch64,
+  # and OVMF (x86_64 firmware) is not built since no x86_64 cross-toolchain
+  # is assumed to be available.
+  pkgname=(edk2-aarch64 edk2-riscv64 edk2-shell)
+else
+  pkgname=(edk2-aarch64 edk2-riscv64 edk2-shell edk2-ovmf)
+fi
 pkgver=202602
 pkgrel=3
 pkgdesc="Modern, feature-rich firmware development environment for the UEFI specifications"
@@ -14,7 +21,6 @@ license=(
   MIT
 )
 makedepends=(
-  aarch64-linux-gnu-gcc
   acpica
   git
   util-linux-libs
@@ -22,6 +28,9 @@ makedepends=(
   python
   riscv64-linux-gnu-gcc
 )
+if [[ "$CARCH" != "aarch64" ]]; then
+  makedepends+=(aarch64-linux-gnu-gcc)
+fi
 options=(!makeflags)
 source=(
   git+$url#tag=$pkgbase-stable$pkgver
@@ -109,7 +118,11 @@ b2sums=('7fabdf343b861fd81554021d43aed79d0a96ee3dd76ddc225c4c1212ee2d89736a4cad1
         '13405c8786ddf4be86592054ce8be246b3d8bb041d23825eb5ac08188527309b511d24ccd408fdb56f1dae25defba3f7c1ee70c9d44e937e902f7e63f5dc2f06'
         'b53bbe532f9a7583bfbcc9436f2172f2dcaa75177c1480753a2a60d97a2fbd5bfb86b97b3f7c27d82e88eb2035c6607abb7e35d39a42e6a2d40c0b54d7c430ef'
         '0c1e145109de9a25339633b563e47f6c09ea314f636023d09a58559a499dd0bd283a45e050fc99fe34c4d712bd00a035064fa8406734d57029c67b9adb4b11ce')
-_arch_list=(AArch64 RiscV64 X64)
+if [[ "$CARCH" == "aarch64" ]]; then
+  _arch_list=(AArch64 RiscV64)
+else
+  _arch_list=(AArch64 RiscV64 X64)
+fi
 _build_type=RELEASE
 _build_plugin=GCC
 
@@ -201,7 +214,11 @@ build() {
   # so it cannot be set to x86_64-linux-gnu-
   # (binutils does not provide x86_64-linux-gnu-objcopy)
   export GCC_BIN=""
-  export GCC_AARCH64_PREFIX="aarch64-linux-gnu-"
+  if [[ "$CARCH" == "aarch64" ]]; then
+    export GCC_AARCH64_PREFIX=""
+  else
+    export GCC_AARCH64_PREFIX="aarch64-linux-gnu-"
+  fi
   export GCC_RISCV64_PREFIX="riscv64-linux-gnu-"
   echo "Building base tools"
   make -C BaseTools
