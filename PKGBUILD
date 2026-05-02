@@ -4,9 +4,9 @@
 pkgbase=edk2
 if [[ "$CARCH" == "aarch64" ]]; then
   # On aarch64 hosts (e.g. Arch Linux ARM) the native gcc targets aarch64,
-  # and OVMF (x86_64 firmware) is not built since no x86_64 cross-toolchain
-  # is assumed to be available.
-  pkgname=(edk2-aarch64 edk2-riscv64 edk2-shell)
+  # and OVMF (x86_64) / riscv64 firmware are not built since no matching
+  # cross-toolchains are assumed to be available.
+  pkgname=(edk2-aarch64 edk2-shell)
 else
   pkgname=(edk2-aarch64 edk2-riscv64 edk2-shell edk2-ovmf)
 fi
@@ -26,10 +26,9 @@ makedepends=(
   util-linux-libs
   nasm
   python
-  riscv64-linux-gnu-gcc
 )
 if [[ "$CARCH" != "aarch64" ]]; then
-  makedepends+=(aarch64-linux-gnu-gcc)
+  makedepends+=(aarch64-linux-gnu-gcc riscv64-linux-gnu-gcc)
 fi
 options=(!makeflags)
 source=(
@@ -119,7 +118,7 @@ b2sums=('7fabdf343b861fd81554021d43aed79d0a96ee3dd76ddc225c4c1212ee2d89736a4cad1
         'b53bbe532f9a7583bfbcc9436f2172f2dcaa75177c1480753a2a60d97a2fbd5bfb86b97b3f7c27d82e88eb2035c6607abb7e35d39a42e6a2d40c0b54d7c430ef'
         '0c1e145109de9a25339633b563e47f6c09ea314f636023d09a58559a499dd0bd283a45e050fc99fe34c4d712bd00a035064fa8406734d57029c67b9adb4b11ce')
 if [[ "$CARCH" == "aarch64" ]]; then
-  _arch_list=(AArch64 RiscV64)
+  _arch_list=(AArch64)
 else
   _arch_list=(AArch64 RiscV64 X64)
 fi
